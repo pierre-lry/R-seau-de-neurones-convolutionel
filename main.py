@@ -21,8 +21,8 @@ class CNN:
         :return:
         '''
         for i in range(dimension_image[2]):
-            nouvelle_image=np.full((h_padding+dimension_image[0],w_padding+dimension_image[1],3),valeur_padding)
-            nouvelle_image[][]
+            nouvelle_image=np.full((h_padding+dimension_image[0],w_padding+dimension_image[1],dimension_image[2]),valeur_padding)
+
         pass
     def convolution(self,image,filtres,nb_filtres,taille_filtres,pas): '''
     renvoie une liste de matrices de dimension qui dépend du pas et du padding. 
