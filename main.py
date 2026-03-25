@@ -21,6 +21,15 @@ class CNN:
     def dim_filtre(self,filtre):
         H,W=filtre.shape
         return H,W
+    def nb_iteration(self, dim_image, dim_filtre, pas):
+        cpt_H = 0
+        cpt_W = 0
+        while dim_image[0] - pas*cpt_H >= dim_filtre[0] :
+            cpt_H+=1
+        while dim_image[1] - pas*cpt_W >= dim_filtre[1] :
+            cpt_W+=1
+        return cpt_H,cpt_W
+
     def padding(self,image,valeur_padding,h_padding,w_padding):
         '''
         :param image --> matrice considérée,
@@ -37,11 +46,13 @@ class CNN:
         taille_filtres=self.dim_filtre(filtres)
         resultat=np.array([])
         for i in range(nb_filtres):
-            resultat_intermediaire=np.array([])
+            iteration_H, iteration_W = self.nb_iteration(dimension_image, taille_filtres, pas)
+            resultat_intermediaire = np.full((iteration_H, iteration_W), 0)
             for j in range(dimension_image[2]): #on applique le filtre à chaque couche
-                for k in range(dimension_image[1]):
-                    for l in range(dimension_image[0]):
-                        resultat_intermediaire[]
+                resultat_intermediaire2 = np.full((iteration_H, iteration_W), 0)
+                for k in range(iteration_W):
+                    for l in range(iteration_H):
+                        #
             resultat=np.append(resultat,resultat_intermediaire)
         return resultat
 
