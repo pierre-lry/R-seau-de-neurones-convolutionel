@@ -7,7 +7,7 @@ class CNN:
         self.nb_couches=nb_couches #chiffre
         self.couches=couches
         self.filtres=filtres
-        self.biais=biais
+        self.biais=biais #dico avec en clé s'il s'agit d'un biais pour les filtres ou d'un biais pour la couche de densification
         self.reseau=Reseau2neurone_RELU(nb_couches_mlp,neurones_couche,learning_rate)
     def reLU(self,x):
         return np.where(x>0,x,0)
