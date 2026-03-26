@@ -42,23 +42,24 @@ class CNN:
         '''
         padded_image = np.pad(image, ((h_padding,h_padding), (w_padding,w_padding), (0,0)), mode='constant', constant_values=valeur_padding)
         return padded_image
-    def convolution(self,image,filtres,nb_filtres,pas): #renvoie une liste de matrices de dimension qui dépend du pas et du padding. Les nb de matrices correspond aux nb de filtres (canaux)
+    def convolution(self,image,filtres,pas, biais): #renvoie une liste de matrices de dimension qui dépend du pas et du padding. Les nb de matrices correspond aux nb de filtres (canaux)
         dimension_image=self.dim_image(image)
         taille_filtres=self.dim_filtre(filtres)
-        resultat=np.array([])
-        for i in range(nb_filtres):
-            iteration_H, iteration_W = self.nb_iteration(dimension_image, taille_filtres, pas)
+        iteration_H, iteration_W = self.nb_iteration(dimension_image, taille_filtres, pas)
+        resultat = np.zeros((len(filtres), iteration_H, iteration_W))
+        for num_filtre in range(len(filtres)):
             resultat_intermediaire = np.full((iteration_H, iteration_W), 0)
-            for j in range(dimension_image[2]): #on applique le filtre à chaque couche
+            for num_canal in range(dimension_image[2]): #on applique le filtre à chaque couche
                 resultat_intermediaire2 = np.full((iteration_H, iteration_W), 0)
-                for k in range(iteration_W):
-                    for l in range(iteration_H):
-                        #
-            resultat=np.append(resultat,resultat_intermediaire)
+                for decalage_ligne in range(iteration_H):
+                    for decalage_colonne in range(iteration_W):
+                        kH, kW = filtres[num_filtre][num_canal].shape
+                        zone = image[decalage_ligne * pas: decalage_ligne * pas + kH,decalage_colonne * pas: decalage_colonne * pas + kW,num_canal]
+                        resultat_intermediaire2[decalage_ligne][decalage_colonne] = np.sum(zone*filtres[num_filtre][num_canal])
+                resultat_intermediaire += resultat_intermediaire2
+            resultat_intermediaire += biais[num_filtre]
+            resultat[num_filtre] = resultat_intermediaire
         return resultat
-
-
-        #return image
     def maxPooling(self,liste_image,dimension):
         H,W=dimension
         resultat=[]
