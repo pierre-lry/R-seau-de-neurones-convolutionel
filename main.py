@@ -1,16 +1,16 @@
 import numpy as np
+from perceptron import *
 class CNN:
-    def __init__(self,image,label,nb_couches,couches,filtres,biais):
+    def __init__(self,image,label,nb_couches,couches,filtres,biais,nb_couches_mlp,neurones_couche,learning_rate,):
         self.image=image #tuple : (largeur,hauteur,canaux)
         self.label=label #label correspondant à l'image étudiée
         self.nb_couches=nb_couches #chiffre
         self.couches=couches
         self.filtres=filtres
         self.biais=biais
+        self.reseau=Reseau2neurone_RELU(nb_couches_mlp,neurones_couche,learning_rate)
     def reLU(self,x):
         return np.where(x>0,x,0)
-    def softmax(self,x):
-        return np.exp(x) / np.sum(np.exp(x))
     def dim_image(self, image): #fonction pour donner la dim de l'image sous la forme (H,W,D)
         shape = image.shape
         if len(shape) == 2 :
@@ -105,8 +105,7 @@ class CNN:
                 liste_image=self.averagePooling(liste_image,pas)
             image=liste_image
         image=self.dense(image)
-        resultat=self.softmax(image)
-        return resultat
+        self.reseau.forward_propagation(image)
 
     def backward(self):
         pass
