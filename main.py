@@ -21,12 +21,13 @@ class CNN:
     def dim_filtre(self,filtre):
         H,W=filtre.shape
         return H,W
-    def nb_iteration(self, dim_image, dim_filtre, pas):
+    def nb_iteration(self, dim_image, dim_filtre, pas): #le pas peut être différent entre décalage colonne
+        #et décalage ligne
         cpt_H = 0
         cpt_W = 0
-        while dim_image[0] - pas*cpt_H >= dim_filtre[0] :
+        while dim_image[0] - pas[0]*cpt_H >= dim_filtre[0] :
             cpt_H+=1
-        while dim_image[1] - pas*cpt_W >= dim_filtre[1] :
+        while dim_image[1] - pas[1]*cpt_W >= dim_filtre[1] :
             cpt_W+=1
         return cpt_H,cpt_W
 
@@ -58,7 +59,11 @@ class CNN:
 
 
         #return image
-    def maxPooling(self,image):
+    def maxPooling(self,liste_image,dimension):
+        H,W=dimension
+        for i in range(len(liste_image)):
+            iteration_H,iteration_W=self.nb_iteration(self.dim_image(liste_image[i]), (H,W),W)
+            for i in range(iteration_W):
         pass
     def averagePooling(self):
         pass
