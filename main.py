@@ -61,13 +61,36 @@ class CNN:
         #return image
     def maxPooling(self,liste_image,dimension):
         H,W=dimension
+        resultat=[]
         for i in range(len(liste_image)):
-            iteration_H,iteration_W=self.nb_iteration(self.dim_image(liste_image[i]), (H,W),W)
-            for i in range(iteration_W):
-        pass
-    def averagePooling(self):
-        pass
-    def dense(self):
+            iteration_H, iteration_W = self.nb_iteration(self.dim_image(liste_image[i]), (H, W), (H, W))
+            pooling = np.zeros((iteration_H, iteration_W))
+            for j in range(iteration_W):
+                for k in range(iteration_H):
+                    debut_H=H*k
+                    debut_W=W*j
+                    pooling[k,j]=np.max(liste_image[i][debut_H:debut_H+H,debut_W:debut_W+W])
+            resultat.append(pooling)
+        return resultat
+
+    def averagePooling(self,liste_image,dimension):
+        H, W = dimension
+        resultat = []
+        for i in range(len(liste_image)):
+            iteration_H, iteration_W = self.nb_iteration(self.dim_image(liste_image[i]), (H, W), (H, W))
+            pooling = np.zeros((iteration_H, iteration_W))
+            for j in range(iteration_W):
+                for k in range(iteration_H):
+                    debut_H = H * k
+                    debut_W = W * j
+                    pooling[k, j] = np.mean(liste_image[i][debut_H:debut_H + H, debut_W:debut_W + W])
+            resultat.append(pooling)
+        return resultat
+
+    def dense(self,liste_image):
+        liste_image=np.asarray(liste_image)
+        applati=liste_image.flatten()
+
         pass
     def forward(self): #assemble les étapes
         pass
