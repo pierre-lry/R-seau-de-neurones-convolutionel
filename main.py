@@ -1,11 +1,12 @@
 import numpy as np
 class CNN:
-    def __init__(self,image,label,nb_couches,couches,filtres):
+    def __init__(self,image,label,nb_couches,couches,filtres,biais):
         self.image=image #tuple : (largeur,hauteur,canaux)
         self.label=label #label correspondant à l'image étudiée
         self.nb_couches=nb_couches #chiffre
         self.couches=couches
         self.filtres=filtres
+        self.biais=biais
     def reLU(self,x):
         return np.where(x>0,x,0)
     def softmax(self,x):
@@ -42,7 +43,7 @@ class CNN:
         '''
         padded_image = np.pad(image, ((h_padding,h_padding), (w_padding,w_padding), (0,0)), mode='constant', constant_values=valeur_padding)
         return padded_image
-    def convolution(self,image,filtres,pas, biais): #renvoie une liste de matrices de dimension qui dépend du pas et du padding. Les nb de matrices correspond aux nb de filtres (canaux)
+    def convolution(self,image,filtres,pas, biais): #renvoie un np array de matrices de dimension qui dépend du pas et du padding. Les nb de matrices correspond aux nb de filtres (canaux)
         dimension_image=self.dim_image(image)
         taille_filtres=self.dim_filtre(filtres)
         iteration_H, iteration_W = self.nb_iteration(dimension_image, taille_filtres, pas)
@@ -63,7 +64,7 @@ class CNN:
     def maxPooling(self,liste_image,dimension):
         H,W=dimension
         resultat=[]
-        for i in range(len(liste_image)):
+        for i in range(liste_image.shape[0]):
             iteration_H, iteration_W = self.nb_iteration(self.dim_image(liste_image[i]), (H, W), (H, W))
             pooling = np.zeros((iteration_H, iteration_W))
             for j in range(iteration_W):
@@ -77,7 +78,7 @@ class CNN:
     def averagePooling(self,liste_image,dimension):
         H, W = dimension
         resultat = []
-        for i in range(len(liste_image)):
+        for i in range(liste_image.shape[0]):
             iteration_H, iteration_W = self.nb_iteration(self.dim_image(liste_image[i]), (H, W), (H, W))
             pooling = np.zeros((iteration_H, iteration_W))
             for j in range(iteration_W):
@@ -89,11 +90,23 @@ class CNN:
         return resultat
 
     def dense(self,liste_image):
-        liste_image=np.asarray(liste_image)
-        applati=liste_image.flatten()
+        return liste_image.flatten()
 
-        pass
-    def forward(self): #assemble les étapes
-        pass
+    def forward(self,nb_convolutions,pas,type='max'): #assemble les étapes
+        image=self.image
+        biais=self.biais
+        for i in range(nb_convolutions):
+            filtres=self.filtres[i]
+            liste_image=self.convolution(image,filtres,pas[i],biais[i])
+            liste_image=self.reLU(liste_image)
+            if type=='max':
+                liste_image=self.maxPooling(liste_image,pas)
+            else:
+                liste_image=self.averagePooling(liste_image,pas)
+            image=liste_image
+        image=self.dense(image)
+        resultat=self.softmax(image)
+        return resultat
+
     def backward(self):
         pass
