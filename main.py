@@ -1,13 +1,21 @@
 import numpy as np
 from perceptron import *
+#Pour jeudi : A. Dataset images (xtrain,xlabel,ytrain,ylabel)
+#B. forward
 class CNN:
-    def __init__(self,image,label,nb_couches,couches,filtres,biais,nb_couches_mlp,neurones_couche,learning_rate,):
+    def __init__(self,image,label,nb_couches,couches,taille_filtre,nb_couches_mlp,neurones_couche,learning_rate):
         self.image=image #tuple : (largeur,hauteur,canaux)
         self.label=label #label correspondant à l'image étudiée
         self.nb_couches=nb_couches #chiffre
-        self.couches=couches
-        self.filtres=filtres
-        self.biais=biais #dico avec en clé s'il s'agit d'un biais pour les filtres ou d'un biais pour la couche de densification
+        self.couches=couches #liste avec nb de filtres dans la couche
+        self.taille_filtre=taille_filtre
+        self.filtres={}
+        for couche in range(0,nb_couches):
+            for filtre in range(0,self.couches[couche]):
+                self.filtres[couche][filtre]=np.random.randn(self.taille_filtre[couche][0],self.taille_filtre[couche][1])*np.sqrt(2.0 /(self.taille_filtre[couche][0]*self.taille_filtre[couche][1]))
+        self.biais={}#dico avec en clé s'il s'agit d'un biais pour les filtres ou d'un biais pour la couche de densification
+        for couche in range(0,nb_couches):
+            self.biais[couche]=np.full((self.taille_filtre[couche][0],self.filtres[couche][1]),1)
         self.reseau=Reseau2neurone_RELU(nb_couches_mlp,neurones_couche,learning_rate)
     def reLU(self,x):
         return np.where(x>0,x,0)
@@ -108,4 +116,4 @@ class CNN:
         self.reseau.forward_propagation(image)
 
     def backward(self):
-        pass
+        self.reseau.backward_propagation()
