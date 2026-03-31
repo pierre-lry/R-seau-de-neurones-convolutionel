@@ -2,6 +2,7 @@ import numpy as np
 from perceptron import *
 #Pour jeudi : A. Dataset images (xtrain,xlabel,ytrain,ylabel)
 #B. forward
+#C. Backward (pour le perceptron)
 class CNN:
     def __init__(self,image,label,nb_couches,couches,taille_filtre,nb_couches_mlp,neurones_couche,learning_rate):
         self.image=image #tuple : (largeur,hauteur,canaux)
