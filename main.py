@@ -5,12 +5,13 @@ from perceptron import *
 #C. Backward (pour le perceptron)
 class CNN:
     def __init__(self,image,label,nb_couches,couches,taille_filtre,nb_couches_mlp,neurones_couche,learning_rate):
-        self.image=image #tuple : (largeur,hauteur,canaux)
-        self.label=label #label correspondant à l'image étudiée
+        self.image=image # tuple : (largeur,hauteur,canaux)
+        self.label=label # label correspondant à l'image étudiée
         self.nb_couches=nb_couches #chiffre
         self.couches=couches #liste avec nb de filtres dans la couche
         self.taille_filtre=taille_filtre
         self.filtres={}
+        self.relU_indices={}
         for couche in range(0,nb_couches):
             for filtre in range(0,self.couches[couche]):
                 self.filtres[couche][filtre]=np.random.randn(self.taille_filtre[couche][0],self.taille_filtre[couche][1])*np.sqrt(2.0 /(self.taille_filtre[couche][0]*self.taille_filtre[couche][1]))
@@ -19,7 +20,11 @@ class CNN:
             self.biais[couche]=np.full((self.taille_filtre[couche][0],self.filtres[couche][1]),1)
         self.reseau=Reseau2neurone_RELU(nb_couches_mlp,neurones_couche,learning_rate)
     def reLU(self,x):
-        return np.where(x>0,x,0)
+        for num_image in range(len(x)) :
+            indices = np.where(x[num_image]>0)
+            result = np.where(x[num_image]>0,x[num_image],0)
+
+        return result, indices
     def dim_image(self, image): #fonction pour donner la dim de l'image sous la forme (H,W,D)
         shape = image.shape
         if len(shape) == 2 :
@@ -40,7 +45,6 @@ class CNN:
         while dim_image[1] - pas[1]*cpt_W >= dim_filtre[1] :
             cpt_W+=1
         return cpt_H,cpt_W
-
     def padding(self,image,valeur_padding,h_padding,w_padding):
         '''
         :param image --> matrice considérée,
@@ -83,7 +87,6 @@ class CNN:
                     pooling[k,j]=np.max(liste_image[i][debut_H:debut_H+H,debut_W:debut_W+W])
             resultat.append(pooling)
         return resultat
-
     def averagePooling(self,liste_image,dimension):
         H, W = dimension
         resultat = []
@@ -101,19 +104,20 @@ class CNN:
     def dense(self,liste_image):
         return liste_image.flatten()
 
-    def forward(self,nb_convolutions,pas,type='max'): #assemble les étapes
+    def forward(self,pas,type='max'): #assemble les étapes
         image=self.image
         biais=self.biais
-        for i in range(nb_convolutions):
-            filtres=self.filtres[i]
+        for i in range(self.nb_couches):
+            filtres=self.filtres[i] #liste
             liste_image=self.convolution(image,filtres,pas[i],biais[i])
             liste_image=self.reLU(liste_image)
+            self.relU_indices[i][None]
             if type=='max':
                 liste_image=self.maxPooling(liste_image,pas)
             else:
                 liste_image=self.averagePooling(liste_image,pas)
             image=liste_image
-        image=self.dense(image)
+        image=self.dense(image) #flatten
         self.reseau.forward_propagation(image)
 
     def backward(self):
